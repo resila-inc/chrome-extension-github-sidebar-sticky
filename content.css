@@ -1,0 +1,23 @@
+/*
+ * NOTE: セレクタは #partial-discussion-sidebar のみに絞る。
+ *       GitHub の新レイアウト（Primer PageLayout）はクラス名がハッシュ付きで
+ *       デプロイごとに変わりうるが、この id は旧レイアウトから共通して安定している。
+ *       親のペイン（prc-PageLayout-Pane）はメインカラムと同じ高さに伸びているため、
+ *       sticky の可動範囲としてそのまま使える。
+ */
+:root {
+  --ghss-top: 0px;
+  --ghss-gap: 8px;
+}
+
+#partial-discussion-sidebar {
+  position: sticky;
+  top: calc(var(--ghss-top) + var(--ghss-gap));
+  max-height: calc(100vh - var(--ghss-top) - var(--ghss-gap) * 2);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  /* NOTE: overflow を切るとポップオーバー等の影がサイドバー端で欠けるため、内側に余白を取る */
+  padding-inline: 4px;
+  margin-inline: -4px;
+}
