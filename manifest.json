@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "GitHub Sticky Sidebar",
   "version": "0.1.0",
-  "description": "GitHub の PR / Issue ページで右サイドバー（Reviewers 等）を画面に固定し、はみ出す場合はサイドバー内でスクロールできるようにします。",
+  "description": "GitHub の PR ページで右サイドバー（Reviewers 等）を画面に固定し、はみ出す場合はサイドバー内でスクロールできるようにします。",
   "content_scripts": [
     {
       "matches": ["https://github.com/*"],

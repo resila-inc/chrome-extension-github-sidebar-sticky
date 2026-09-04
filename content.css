@@ -1,23 +1,38 @@
 /*
  * NOTE: セレクタは #partial-discussion-sidebar のみに絞る。
- *       GitHub の新レイアウト（Primer PageLayout）はクラス名がハッシュ付きで
- *       デプロイごとに変わりうるが、この id は旧レイアウトから共通して安定している。
- *       親のペイン（prc-PageLayout-Pane）はメインカラムと同じ高さに伸びているため、
- *       sticky の可動範囲としてそのまま使える。
+ *       GitHub の PR ページ（Primer PageLayout）はクラス名がハッシュ付きで変わりうるが、
+ *       この id は旧レイアウトから引き継がれている。親ペイン（prc-PageLayout-Pane）が
+ *       メインカラムと同じ高さ（実測 3319px、サイドバー本体は 857px）まで伸び、祖先に
+ *       overflow を切る要素が無いことを実機で確認しており、sticky の可動範囲として使える。
+ *       Issue ページは React 実装でこの id を持たないため対象外。
  */
 :root {
   --ghss-top: 0px;
   --ghss-gap: 8px;
 }
 
-#partial-discussion-sidebar {
-  position: sticky;
-  top: calc(var(--ghss-top) + var(--ghss-gap));
-  max-height: calc(100vh - var(--ghss-top) - var(--ghss-gap) * 2);
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  scrollbar-width: thin;
-  /* NOTE: overflow を切るとポップオーバー等の影がサイドバー端で欠けるため、内側に余白を取る */
-  padding-inline: 4px;
-  margin-inline: -4px;
+/* NOTE: 1012px 未満では GitHub がサイドバーを本文の下に回すため、固定すると画面を占有してしまう */
+@media (min-width: 1012px) {
+  #partial-discussion-sidebar {
+    position: sticky;
+    top: calc(var(--ghss-top) + var(--ghss-gap));
+    max-height: calc(100vh - var(--ghss-top) - var(--ghss-gap) * 2);
+    overflow-y: auto;
+    scrollbar-width: thin;
+    /* NOTE: overflow-y: auto でサイドバー端の影がクリップされるため、内側に余白を取って逃がす */
+    padding-inline: 4px;
+    margin-inline: -4px;
+  }
+
+  /*
+   * NOTE: Reviewers / Assignees / Labels のメニュー（details 内の position: absolute）は
+   *       サイドバーのサブツリーに描かれるため、overflow を切ったままだと下端で切れて
+   *       末尾の項目が押せなくなる（実測: メニュー高 523px に対し表示領域 640px で再現）。
+   *       メニューが開いている間だけクリップを解除する。開放中は内側スクロールが
+   *       効かなくなるが、メニューは操作中の項目に隣接して開くため実害は小さい。
+   */
+  #partial-discussion-sidebar:has(details[open]),
+  #partial-discussion-sidebar:has([aria-expanded="true"]) {
+    overflow: visible;
+  }
 }
