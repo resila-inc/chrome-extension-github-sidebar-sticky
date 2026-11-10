@@ -1,10 +1,7 @@
-:root {
-  --ghss-top: calc(64px + var(--base-sticky-header-height, 0px));
-  --ghss-gap: 8px;
-}
-
-@media (min-width: 768px) {
+@media (min-width: 48rem) {
   [data-testid="sticky-sidebar"]:has(> [data-overview-sidebar-item]) {
+    --ghss-top: calc(64px + var(--base-sticky-header-height, 0px));
+    --ghss-gap: 8px;
     position: sticky !important;
     top: var(--ghss-top) !important;
     max-height: calc(100vh - var(--ghss-top) - var(--ghss-gap));
