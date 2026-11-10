@@ -9,12 +9,15 @@ PR の Merge ボタンや CI 結果を見るためにページ下端までスク
 
 ## 挙動
 
-- サイドバーを `position: sticky` で固定する（ウィンドウ幅 1012px 以上の 2 カラム表示のみ）
-- スクロール時に出る PR タイトルのスティッキーヘッダーと重ならないよう、その高さを実測して上端オフセットにする
-- サイドバーが画面より高い場合は、固定エリアの中でサイドバーだけがスクロールする
-- Reviewers / Labels などのメニューを開いている間は、メニューが切れないよう内側スクロールを解除する
+GitHub の PR ページ（React 実装）はサイドバーを自前で sticky にしているが、サイドバーが画面より高いときは
+スクロール方向に合わせて `position` と `top` をインラインで書き換え、サイドバーを上下に動かす。
+この拡張はその動きを止め、位置を固定したまま中身をサイドバー内でスクロールさせる。
 
-Issue ページは React 実装でサイドバーの DOM 構造が異なるため対象外。
+- サイドバー（`[data-testid="sticky-sidebar"]`）の `position` / `top` を GitHub と同じ初期値で固定する（ウィンドウ幅 48rem（既定で 768px）以上の 2 カラム表示のみ）
+- サイドバーが画面より高い場合は、固定エリアの中でサイドバーだけがスクロールする
+- サイドバーが画面に収まる場合は、GitHub 標準の表示と変わらない
+
+Issue ページも同じ `data-testid` を持つが、上端オフセットが異なる（72px）ため対象外にしている。
 
 ## インストール（開発者モード）
 
@@ -26,11 +29,10 @@ Issue ページは React 実装でサイドバーの DOM 構造が異なるた�
 
 | ファイル | 役割 |
 |---|---|
-| `manifest.json` | Manifest V3。`https://github.com/*` に content script を注入する |
-| `content.css` | `#partial-discussion-sidebar` を sticky にし、はみ出し時に内側スクロールさせる |
-| `content.js` | スティッキーヘッダーの高さを実測して CSS 変数 `--ghss-top` に反映する |
+| `manifest.json` | Manifest V3。`https://github.com/*` に content CSS を注入する |
+| `content.css` | PR ページのサイドバーの位置を固定し、はみ出し時に内側スクロールさせる |
 | `.node-version` | 将来ツールチェーンを入れる際の Node バージョン固定（現状ビルド工程はない） |
 
-注入先を `https://github.com/*` 全体にしているのは、GitHub が Turbo によるソフトナビゲーションで
-ページを差し替えるため。PR ページだけに絞ると、一覧から PR へ遷移したときに content script が
-注入されず動かない。script 側は `#partial-discussion-sidebar` が無いページでは何もしない。
+注入先を `https://github.com/*` 全体にしているのは、GitHub がソフトナビゲーションでページを差し替えるため。
+PR ページだけに絞ると、一覧から PR へ遷移したときに CSS が注入されない。セレクタが PR ページのサイドバーにしか
+一致しないので、他のページには影響しない。
